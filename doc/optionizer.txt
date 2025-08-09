@@ -1,0 +1,108 @@
+*optionizer.txt* A simple options manager plugin.
+
+==============================================================================
+INTRODUCTION                                                *optionizer-intro*
+
+The Optionizer plugin provides a simple singleton-based options manager for Neovim.
+It allows you to define and manage options that can be activated or deactivated
+dynamically. The plugin's `setup()` function returns an instance of the options
+manager, which can then be used to add, activate, and deactivate options.
+
+==============================================================================
+SETUP AND USAGE                                             *optionizer-usage*
+
+To use the plugin, you first need to call the `setup()` function in your
+`init.lua` file. This will create and return the singleton instance of the
+manager.
+
+Example: >
+  require("optionizer").setup()
+
+After setup, you can retrieve the manager instance using `get_instance()`
+to interact with it.
+
+Example: >
+  local opts_manager = require("optionizer").get_instance()
+  opts_manager:add_option("my_feature", true, false)
+  opts_manager:activate_option("my_feature")
+<
+
+This plugin also provides a user command to list active options.
+
+- `:OptionizerActiveOptions`
+  Displays a list of all currently active options.
+
+==============================================================================
+FUNCTIONS                                                   *optionizer-functions*
+
+`setup()`                                                   *optionizer.setup()*
+  Initializes the options manager (singleton pattern).
+  The function returns the manager instance. It also registers the
+  `OptionizerActiveOptions` user command.
+
+`get_instance()`                                            *optionizer.get_instance()*
+  Retrieves the singleton instance of the options manager.
+  This is the preferred way to access the manager after setup.
+
+`add_option({self}, {option_name}, {value}, [{default_return_value}])`      *optionizer.add_option()*
+  Adds a new option to the manager.
+  - {self}: The manager instance.
+  - {option_name}: The name (key) of the option as a string.
+  - {value}: The value to be returned when the option is active.
+  - [{default_return_value}]: Optional. The value to be returned when
+    the option is inactive. Defaults to `nil`.
+
+`activate_option({self}, {option_name})`                    *optionizer.activate_option()*
+  Activates a specific option.
+  - {self}: The manager instance.
+  - {option_name}: The name of the option to activate.
+
+`deactivate_option({self}, {option_name})`                  *optionizer.deactivate_option()*
+  Deactivates a specific option.
+  - {self}: The manager instance.
+  - {option_name}: The name of the option to deactivate.
+
+`get_active_options({self})`                                *optionizer.get_active_options()*
+  Returns a list of the names of all currently active options.
+  - {self}: The manager instance.
+
+`get_inactive_options({self})`                              *optionizer.get_inactive_options()*
+  Returns a list of the names of all currently inactive options.
+  - {self}: The manager instance.
+
+==============================================================================
+USER COMMANDS                                               *optionizer-commands*
+
+`:OptionizerActiveOptions`
+  Calls `optionizer.get_active_options()` and displays the result.
+
+==============================================================================
+EXAMPLES                                                    *optionizer-examples*
+
+A complete example showing how to use the plugin: >
+  -- in your init.lua
+  local opt_mgr = require("optionizer").setup()
+
+  opt_mgr:add_option("my_first_option", "Hello!", nil)
+  opt_mgr:add_option("my_second_option", { key = "value" }, nil)
+  opt_mgr:add_option("use_feature_x", true, false)
+
+  opt_mgr:activate_option("my_first_option")
+  opt_mgr:activate_option("use_feature_x")
+
+  -- The value of the option can be accessed directly from the manager instance
+  print(opt_mgr.my_first_option) -- This will print "Hello!"
+
+  -- The inactive option will return its default value
+  print(opt_mgr.my_second_option) -- This will print nil
+
+  -- The user command can be used to see the active options
+  -- :OptionizerActiveOptions
+  -- The output will be:
+  -- {
+  --  [1] = "my_first_option",
+  --  [2] = "use_feature_x"
+  -- }
+<
+vim:tw=78:ts=2:ft=help:norl:
+
